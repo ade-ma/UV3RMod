@@ -25,6 +25,7 @@
 #define SERIALCTRL_H
 
 
+void updateRDA1846Freq(unsigned short freqM, unsigned short freqK);
 void getFreqFromSerial(unsigned short* freqM, unsigned short* freqK);
 void setReg(unsigned char addr, short data);
 void processSerialCommand();

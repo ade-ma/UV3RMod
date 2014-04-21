@@ -1,23 +1,23 @@
-/* 
+/*
  * This file is part of the uv3r firmware
  * More info at www.liorelazary.com
- * 
- * Created by Lior Elazary (KK6BWA) Copyright (C) 2013 <lior at elazary dot com> 
- * 
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or 
- * (at your option) any later version. 
- * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- * GNU General Public License for more details. 
- * 
- * You should have received a copy of the GNU General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA 
- */ 
+ *
+ * Created by Lior Elazary (KK6BWA) Copyright (C) 2013 <lior at elazary dot com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
 #include <MC81F8816/MC81F8816.h>
 #include <hms800.h>
@@ -48,7 +48,7 @@ void showStr(unsigned char idx, void* ptr)
   while(*str != 0)
     uiDisplay[p++] = *str++;
 
-  if (uiEditLoc[idx] != -1 && 
+  if (uiEditLoc[idx] != -1 &&
       ((flashCnt++)&FLASH_INTERVAL) )
   {
     uiDisplay[idx*3 + uiEditLoc[idx]] = '_';
@@ -86,7 +86,7 @@ void showNum(unsigned char idx, void* ptr, unsigned char large)
     }
   }
 
-  if (uiEditLoc[idx] != -1 && 
+  if (uiEditLoc[idx] != -1 &&
       ((flashCnt++)&FLASH_INTERVAL) )
   {
     uiDisplay[idx*3 + (2-uiEditLoc[idx])] = '_';
@@ -107,7 +107,7 @@ void showNumTop(unsigned char idx, void* ptr)
   uiTopNum[0] = '0' + tens;
   uiTopNum[1] = '0' + ones;
 
-  if (uiEditLoc[idx] != -1 && 
+  if (uiEditLoc[idx] != -1 &&
       ((flashCnt++)&FLASH_INTERVAL) )
   {
     uiTopNum[1-uiEditLoc[idx]] = '_';
@@ -183,7 +183,7 @@ void uiIncDecStr(unsigned char pos, char dir)
     return;
 
   char* str = (char*)uiPtr[pos];
-  
+
   str[uiEditLoc[pos]] += dir;
   if (str[uiEditLoc[pos]] > 'z')
     str[uiEditLoc[pos]] = 0;
@@ -220,11 +220,11 @@ void uiIncDecNum(unsigned char pos, char dir)
 
   if (pos == UI_TOP_NUM)
   {
-    if (*num > 99) 
+    if (*num > 99)
       *num = 99;
 
   } else {
-    if (*num > 999) 
+    if (*num > 999)
       *num = 999;
   }
 }
@@ -333,7 +333,7 @@ void updateNum(unsigned short* num, unsigned char digit, char encDir)
       break;
   }
 
-  if (val <= 999) 
+  if (val <= 999)
     *num = val;
 }
 
@@ -345,11 +345,11 @@ void updateRDA1846Freq(unsigned short freqM, unsigned short freqK)
   //Convert from DCB to binary of freqM and freqK while using short (2 byte) numbers
   //The rda1846 keeps the freq in 1khz/8 steps
   //so: 32Bit val = freqM*8000 + freqK*8
-  //since 8000 can be broken down into 125*64 we can first 
+  //since 8000 can be broken down into 125*64 we can first
 
   unsigned short freqKs = freqK;
 
-  //Since freqK is a fraction of 1000, 
+  //Since freqK is a fraction of 1000,
   //convert it into a whole number
   if (freqK > 0 && freqK < 10)
     freqKs = freqK*100;

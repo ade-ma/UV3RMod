@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# uv3rFlash.py 
+# uv3rFlash.py
 # a python program to assist with flashing the uv3r
 # Copyright (C) 2013 Lior Elazary - lior hat elazary.com
 #
@@ -41,6 +41,7 @@ import sys
 import serial
 import srecutils
 import binascii
+import time
 from optparse import OptionParser
 
 def __generate_option_parser():
@@ -58,6 +59,8 @@ def __generate_option_parser():
                       dest="config", help="Program CONFIG bits in hex")
     parser.add_option("-r", action="store", type="string",
                       dest="read", nargs=2, help="Read the flash memory from ADDR_BEGIN to ADDR_END in 4byte hex example C000 FFFF")
+    parser.add_option("-i", action="store_true", default=False,
+                      dest="identifier", help="Read the device ID")
     parser.add_option("-a", action="store",
                       dest="auto", help="Erase, and then flash memory [default: %default]", default=False)
     parser.add_option("-v", action="store", type="string",
@@ -74,7 +77,19 @@ def enterISP():
     if data.startswith("OK"):
       return True
     if data.startswith("ERR"):
-      return False 
+      return False
+
+  return False
+
+def getID():
+  serialPort.write("I"); #Enter ISP mode
+  #given a 1 sec timeout, wait 10 secods
+  data = serialPort.readline(36000);
+  print data
+  if data.startswith("OK"):
+    return True
+  if data.startswith("ERR"):
+    return False
 
   return False
 
@@ -88,7 +103,7 @@ def enterFlashMode():
     if data.startswith("OK"):
       return True
     if data.startswith("ERR"):
-      return False 
+      return False
 
   return False
 
@@ -101,7 +116,7 @@ def exitISP():
     if data.startswith("OK"):
       return True
     if data.startswith("ERR"):
-      return False 
+      return False
 
   return False
 
@@ -114,7 +129,7 @@ def sendErase():
     if data.startswith("OK"):
       return True
     if data.startswith("ERR"):
-      return False 
+      return False
   return False
 
 def eraseChip(serialPort):
@@ -138,7 +153,7 @@ def sendConfigBits(bits):
     if data.startswith("OK"):
       return True
     if data.startswith("ERR"):
-      return False 
+      return False
   return False
 
 def configChip(bits):
@@ -152,7 +167,7 @@ def configChip(bits):
   exitISP()
 
 def sendRead(startAddr, endAddr):
-  
+
   flashBuff = bytearray(endAddr-startAddr+1); #Array to store the return memory
 
   for i in xrange(0,endAddr-startAddr+1):
@@ -198,7 +213,7 @@ def sendProgram(addr, data_len, data):
   if options.debug: print 'Program Addr --%s--%s--%s--\n' % (addr, data_len, data)
   cmd = "P%s %s %s" % (addr, data_len, data)
   if options.debug: print 'send:', cmd
-  serialPort.write(cmd); 
+  serialPort.write(cmd);
   sentData = False
   #given a 1 sec timeout, wait 10 secods
   for t in xrange(0,10):
@@ -222,7 +237,7 @@ def sendBuffer(addr, buff):
 
   if enterFlashMode():
     print "OK"
-  blockSize = 128 
+  blockSize = 128
   for i in xrange(0,len(buff),blockSize):
     ret = 0;
     #Dont progrm the whole flash memory to save time on programming
@@ -244,7 +259,7 @@ def getFlashData(filename, startAddr):
   print "Write %s " % filename
   # open input file
   scn_file = open(filename)
-  
+
   endAddr = 0xFFFF;
   programBuff = bytearray(endAddr-startAddr+1); #Array to store 16K of memory, and program it in one shot
 
@@ -257,21 +272,21 @@ def getFlashData(filename, startAddr):
       # Strip some file content
       srec = srec.strip("\n")
       srec = srec.strip("\r")
-  
+
       # Validate checksum and parse record
       if not srecutils.validate_srec_checksum(srec):
           print "Invalid checksum found!"
       else:
           # Extract data from the srec
           record_type, data_len, addr, data, checksum = srecutils.parse_srec(srec)
-  
+
           if record_type == 'S1':
               # Make a copy of the original data record for checksum calculation
               raw_data = data
-  
+
               # Apply offset (default is 0)
               data = srecutils.offset_data(data, 0, 0, 0)
-  
+
               # Get checksum of the new offset srec
               raw_offset_srec = ''.join([record_type, data_len, addr, raw_data])
               int_checksum = srecutils.compute_srec_checksum(raw_offset_srec)
@@ -280,9 +295,9 @@ def getFlashData(filename, startAddr):
               # output to file
               print ''.join([str(linecount), ':', data, '\n']),
 
-  
+
               #data = ''.join([record_type, data_len, addr, data, checksum])
-              plen = int(data_len,16) - 3 #Convert to a number and subtract the addr and length 
+              plen = int(data_len,16) - 3 #Convert to a number and subtract the addr and length
               decAddr = int(addr, 16)
 
               idx = decAddr-startAddr
@@ -299,15 +314,15 @@ def getFlashData(filename, startAddr):
           # All the other record types
           else:
               output_str = ' No Action '.join([srec, '\n'])
-  
+
               output_str = ''.join([str(linecount), ': ', output_str])
-  
+
               print output_str,
-  
-  
+
+
       # increment our fancy linecounter
       linecount += 1
-  
+
   scn_file.close()
 
   return programBuff
@@ -318,7 +333,13 @@ if __name__ == "__main__":
     serialPort = serial.Serial(port = options.port, baudrate = 38400, timeout = 0.2)
 
     exitISP(); #Just incase we stopped before closing
-    if options.erase:
+    if options.identifier:
+        enterISP()
+        time.sleep(2)
+        getID()
+        exitISP()
+        time.sleep(2)
+    elif options.erase:
       eraseChip(serialPort)
       #Send command to erase chip
     elif options.config is not None:

@@ -1,23 +1,23 @@
-/* 
+/*
  * This file is part of the uv3r firmware
  * More info at www.liorelazary.com
- * 
- * Created by Lior Elazary (KK6BWA) Copyright (C) 2013 <lior at elazary dot com> 
- * 
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or 
- * (at your option) any later version. 
- * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- * GNU General Public License for more details. 
- * 
- * You should have received a copy of the GNU General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA 
- */ 
+ *
+ * Created by Lior Elazary (KK6BWA) Copyright (C) 2013 <lior at elazary dot com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
 #include <MC81F8816/MC81F8816.h>
 #include <hms800.h>
@@ -40,7 +40,7 @@ void uartInit()
   ASIMR0  = 0xC2;     // 1100_0010b  no parity  org
   BRGCR0  = 0x3A;     // 0011_1010 BAUD_19200 @fx=8Mhz, BAUD_9600@4Mhz
   //BRGCR0  = 0x3A;     // 0011_1010 BAUD_19200 @fx=8Mhz, BAUD_9600@4Mhz
-  //BRGCR0  = 0x08;     //BAUD_38400;   // ACK 
+  //BRGCR0  = 0x08;     //BAUD_38400;   // ACK
   //BRGCR0  = 0x4A;     //BAUD_9600 @fx=8Mhz,
 
 }
@@ -100,7 +100,7 @@ void uartIntHandler(void)
     }
   }
 
-  if(IFTX0) 
+  if(IFTX0)
   {
     IFTX0 = 0;
     txTail = (txTail + 1) % SERIAL_BUFFER_SIZE;
@@ -115,7 +115,7 @@ void uartSendMsg(char* str)
   //  uartWrite(*str++);
 
   unsigned char i;
-  
+
   //LCD_BACKLIGHT=1;
   //Wait for any previous tx to finish
   while(txHead != txTail)
@@ -147,7 +147,7 @@ void uartSendNum(unsigned short num, unsigned char base)
   {
     *--str = '0';
   } else {
-    
+
     while(num > 0)
     {
       unsigned char digi = num % base;

@@ -1,23 +1,23 @@
-/* 
+/*
  * This file is part of the uv3r firmware
  * More info at www.liorelazary.com
- * 
- * Created by Lior Elazary (KK6BWA) Copyright (C) 2013 <lior at elazary dot com> 
- * 
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or 
- * (at your option) any later version. 
- * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- * GNU General Public License for more details. 
- * 
- * You should have received a copy of the GNU General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA 
- */ 
+ *
+ * Created by Lior Elazary (KK6BWA) Copyright (C) 2013 <lior at elazary dot com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
 #include <MC81F8816/MC81F8816.h>
 #include <hms800.h>
@@ -29,7 +29,7 @@ unsigned char i;
 unsigned char* LCD_ADDR = (unsigned char*)0x0460;
 unsigned short wDly_count;
 
-// Read the dial encoder using gray code to avoid debouncing. 
+// Read the dial encoder using gray code to avoid debouncing.
 //Insperations from
 // http://www.circuitsathome.com/mcu/reading-rotary-encoder-on-arduino
 char getDialEncoder()
@@ -43,7 +43,7 @@ char getDialEncoder()
   //lcdShowNum(encoderState & 0x01, 5, 16);
   if (DIAL_B != (encoderState & 0x01)) //Check that DIAL_B has changed, Could be handle in INT
   {
-    encoderState <<= 1; 
+    encoderState <<= 1;
     if (DIAL_A) encoderState |= 0x01;
     encoderState <<= 1;
     if (DIAL_B) encoderState |= 0x01;
@@ -58,33 +58,33 @@ char getDialEncoder()
   }
 }
 
-unsigned char readADC(unsigned char ADC_CH)			// 8bit ADC read 
+unsigned char readADC(unsigned char ADC_CH)			// 8bit ADC read
 {
   unsigned char k;				//
 
-  ADCRH  = 0x60;				// set 8bit ADC mode   
-  ADCM   = ADC_CH + 0x82;			// conversion start		 			               	 
+  ADCRH  = 0x60;				// set 8bit ADC mode
+  ADCM   = ADC_CH + 0x82;			// conversion start
   for(k=0;k<0xFF;k++)			//
   {	if(ADSF) break;			//
   }						//
-  return	ADCRL;			// return 8 bit data 
+  return	ADCRL;			// return 8 bit data
 }							//
 
 
-void getSelfBias(void)
+/*void getSelfBias(void)
 {
 
-  i	= readADC(ADC_BIAS);		// ADC_15 
+  i	= readADC(ADC_BIAS);		// ADC_15
 #ifndef SIM
   asm("	ldx	_i				;
-      lda	#0CAh				; 3280 
+      lda	#0CAh				; 3280
       ldy	#0Ch				;
       div					;
       sta	_selfBias			;
       ");						//
 #endif
 
-}
+}*/
 
 void initIOPorts()
 {
@@ -94,7 +94,7 @@ void initIOPorts()
   //R06 Power Key Input/RDA1846 sck output
   //R07 Keypad +? / CHG Det Input
 
-  //                      Dial Data 
+  //                      Dial Data
   R0IO = 0x50; //0101 0000
   R0PSR= 0x00; //0000 0000  //Disable Enable buzzer
   R0PU = 0x21; //0010 0001
@@ -121,24 +121,24 @@ void initIOPorts()
 
   //Reg on, turn on the radio
   R2IO = 0x10; //0001 0000
-  R2PU		= 0x00;			// off,  off,  off,  off,  off,  off		 				 
+  R2PU		= 0x00;			// off,  off,  off,  off,  off,  off
   R2OD		= 0x00;			// PP,   PP,   PP,   PP,   PP,   PP
-  R2		  = 0x00;			//  0     0     0     0     0     0   		         
-  // ADC   IO    IO    IO    IO    IO 
+  R2		  = 0x00;			//  0     0     0     0     0     0
+  // ADC   IO    IO    IO    IO    IO
 
 
   //Init interrupts
-  IENH  = 0x0C;     //  x, INT0(6), INT1(5), INT2(4),RX(3),TX(2),x,x  // TX/RX enable 
-  //IENM    = 0x80;     // T0E(7),T1E(6),T2E(5),T3E(4), -, -, -, ADCE(0) 
-  //IENL    = 0x10;     // SPIE(7),BITE(6),WDTE(5),WTE(4),INT3(3),I2CE(2),x,x               
+  IENH  = 0x0C;     //  x, INT0(6), INT1(5), INT2(4),RX(3),TX(2),x,x  // TX/RX enable
+  //IENM    = 0x80;     // T0E(7),T1E(6),T2E(5),T3E(4), -, -, -, ADCE(0)
+  //IENL    = 0x10;     // SPIE(7),BITE(6),WDTE(5),WTE(4),INT3(3),I2CE(2),x,x
 #ifndef SIM
-  asm(" 
+  asm("
       clrg          ;
-      EI          ; Enable global interrupt 
-      nop         ; 
+      EI          ; Enable global interrupt
+      nop         ;
       ");
 #endif
-  
+
   RADIO_PW = 1; //Power on the radio
   SPK_EN = 0;  //Turn off the speaker
 }
@@ -166,14 +166,14 @@ unsigned char getKeys()
   if (keysADC > 255 - KEYS_ADC_OFFSET)
     keys |= 0; //no key presses
   else if (keysADC > 207 - KEYS_ADC_OFFSET)
-    keys |= LR_KEY;  
+    keys |= LR_KEY;
   else if (keysADC > 155 - KEYS_ADC_OFFSET)
     keys |= FA_KEY;
   else if (keysADC > 100 - KEYS_ADC_OFFSET)
     keys |= UV_KEY;
   else if (keysADC > 50 - KEYS_ADC_OFFSET)
     keys |= MENU_KEY;
-  else 
+  else
     keys |= VOL_KEY;
 
 
@@ -208,14 +208,14 @@ unsigned char getKeys()
 
 
 //---------------------------------------------------------------
-//	N ms delay 	by 4MHz crystal 	
+//	N ms delay 	by 4MHz crystal
 //
 //	(caution!) its only aprox because the loop is not accounted for
 void msDelay(unsigned short value)
 {
    unsigned short i;
-   for(i=0; i<value; i++) 
-   {  
+   for(i=0; i<value; i++)
+   {
       delay(1000);
       WDTR	= 0x9F; //reset the watch dog timer
    }
@@ -223,16 +223,16 @@ void msDelay(unsigned short value)
 }
 
 //---------------------------------------------------------------
-//	N usec delay 	by 4MHz crystal 	
+//	N usec delay 	by 4MHz crystal
 //
-//	(caution!) It is available over 48us delay 
-void delay(unsigned short value)		 
+//	(caution!) It is available over 48us delay
+void delay(unsigned short value)
 {
-	wDly_count = value-30;		// 30 us 
+	wDly_count = value-30;		// 30 us
 
 #ifndef SIM
  asm("
- 	lsr	_wDly_count+1		; 4	1/8 
+ 	lsr	_wDly_count+1		; 4	1/8
 	ror	_wDly_count			; 4
  	lsr	_wDly_count+1		; 4
 	ror	_wDly_count			; 4
@@ -244,7 +244,7 @@ void delay(unsigned short value)
 	nop					; 2
 	nop					; 2
 	nop					; 2
-	bne	Rpt_dly			; 4	500ns x 16 = 8us  
+	bne	Rpt_dly			; 4	500ns x 16 = 8us
     ");
 #endif
 }

@@ -7,7 +7,8 @@ OBJDUMP=wine $(CC_INSTALL_DIR)/bin/hms800-elf-objdump
 #TARGET=SIM
 
 #OBJS=lcd.o rda.o spi.o time.o uv3r.o main.o Int.o uart.o ui.o serialCtrl.o util.o radioModes.o
-OBJS=lcd.o rda.o main.o uart.o ui.o serialCtrl.o util.o radioModes.o
+#OBJS=lcd.o rda.o main.o uart.o ui.o serialCtrl.o util.o radioModes.o
+OBJS=rda.o main.o uart.o serialCtrl.o util.o
 
 ifeq ($(TARGET),SIM)
 	FOBJS=$(OBJS) sim/uv3r.o sim/spi.o
@@ -23,10 +24,16 @@ uv3r_firmware: $(FOBJS)
 ifeq ($(TARGET),SIM)
 	gcc -g -o uv3r_firmware $(FOBJS) `pkg-config --libs --cflags gtk+-2.0` -lgthread-2.0
 else
-	$(CC) -ramclr -mshort -Werror -Wl,"-Map=uv3r_firmware.map" --option-file="$(CC_WINDOWS_PATH)\\options\\MC81F8816.opt" -o uv3r_firmware.out $(FOBJS) 
+	$(CC) -ramclr -mshort -Werror -Wl,"-Map=uv3r_firmware.map" --option-file="$(CC_WINDOWS_PATH)\\options\\MC81F8816.opt" -o uv3r_firmware.out $(FOBJS)
 	$(OBJCOPY) -O srec uv3r_firmware.out uv3r_firmware.hex
-	$(OBJSIZE) uv3r_firmware.out 
+	$(OBJSIZE) uv3r_firmware.out
 endif
+
+main: main.o
+	$(CC) -ramclr -mshort -Werror -Wl,"-Map=uv3r_firmware.map" --option-file="$(CC_WINDOWS_PATH)\\options\\MC81F8816.opt" -o uv3r_firmware.out main.o
+	$(OBJCOPY) -O srec uv3r_firmware.out uv3r_firmware.hex
+	$(OBJCOPY) -O binary uv3r_firmware.out uv3r_firmware.bin
+	$(OBJSIZE) uv3r_firmware.out
 
 %.o: %.c sim/lcdSim.h
 ifeq ($(TARGET),SIM)
@@ -41,11 +48,11 @@ ifneq ($(TARGET),SIM)
 endif
 
 flash: uv3r_firmware
-	../programmer/uv3rFlash.py -d -a uv3r_firmware.hex
+	../programmer/uv3rFlash.py -p /dev/ttyUSB0 -d -a uv3r_firmware.hex
 
 dump: uv3r_firmware
 	$(OBJDUMP) -D -S uv3r_firmware.out | less > uv3r_firmware.dis
 
 clean:
-	rm uv3r_firmware.hex *.o *.lst sim/*.o
+	rm -f *out *.hex *bin *.o *.lst sim/*.o
 

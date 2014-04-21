@@ -1,23 +1,23 @@
-/* 
+/*
  * This file is part of the uv3r firmware
  * More info at www.liorelazary.com
- * 
- * Created by Lior Elazary (KK6BWA) Copyright (C) 2013 <lior at elazary dot com> 
- * 
- * This program is free software; you can redistribute it and/or modify 
- * it under the terms of the GNU General Public License as published by 
- * the Free Software Foundation; either version 2 of the License, or 
- * (at your option) any later version. 
- * 
- * This program is distributed in the hope that it will be useful, 
- * but WITHOUT ANY WARRANTY; without even the implied warranty of 
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- * GNU General Public License for more details. 
- * 
- * You should have received a copy of the GNU General Public License 
- * along with this program; if not, write to the Free Software 
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA 
- */ 
+ *
+ * Created by Lior Elazary (KK6BWA) Copyright (C) 2013 <lior at elazary dot com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
 
 #ifndef UV3R_H
@@ -28,7 +28,7 @@
 /*************************************
   Pin Function
   54/COM0  LCD C4
-  55/COM1  LCD C3 
+  55/COM1  LCD C3
   56/COM2  LCD C2
   57/COM3           LCD C1
   58/COM4/SEG39     LCD S31
@@ -57,7 +57,7 @@
   17/SEG8  LCD S8
   18/SEG7  LCD S7
   19/SEG6  LCD S6
-  20/SEG5  LCD S5 
+  20/SEG5  LCD S5
   21/SEG4  LCD S4
   22/SEG3  LCD S3
   23/SEG2  LCD S2
@@ -144,13 +144,13 @@ extern unsigned char* LCD_ADDR;
 
 #define LCD_BACKLIGHT R11
 
-#define  	ADC_0		0x00           	// AN0	 
-#define  	ADC_1		0x04           	// AN1	 
-#define  	ADC_2		0x08          	// AN2	 
-#define  	ADC_3		0x0C         	// AN3	  
-#define  	ADC_4		0x10           	// AN4	 
-#define  	ADC_5		0x14           	// AN5	 
-#define  	ADC_BIAS	0x3C           	// AN15	 
+#define  	ADC_0		0x00           	// AN0
+#define  	ADC_1		0x04           	// AN1
+#define  	ADC_2		0x08          	// AN2
+#define  	ADC_3		0x0C         	// AN3
+#define  	ADC_4		0x10           	// AN4
+#define  	ADC_5		0x14           	// AN5
+#define  	ADC_BIAS	0x3C           	// AN15
 
 #define  VOL_KEY    0x80
 #define  MENU_KEY   0x40
@@ -160,12 +160,12 @@ extern unsigned char* LCD_ADDR;
 #define  PTT_KEY    0x01
 
 void initRadioSettings();
-char getDialEncoder(); 
+//char getDialEncoder();
 void initIOPorts();
-unsigned char getKeys(); 
+//unsigned char getKeys();
 char getBatteryLevel();
-unsigned char readADC(unsigned char ADC_CH);			// 8bit ADC read 
-void getSelfBias(void);
+unsigned char readADC(unsigned char ADC_CH);			// 8bit ADC read
+//void getSelfBias(void);
 
 void msDelay(unsigned short value);
 void delay(unsigned short value);
