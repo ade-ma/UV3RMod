@@ -21,16 +21,9 @@
 
 #include <MC81F8816/MC81F8816.h>
 #include <hms800.h>
-//#include "lcd.h"
 #include "uv3r.h"
 #include "uart.h"
-//#include "ui.h"
 #include "rda.h"
-//#include "radioModes.h"
-
-//unsigned char selfBias;
-unsigned char	i;
-//unsigned char currentMode = 0;
 
 struct RadioSettings radioSettings;
 
@@ -70,58 +63,22 @@ int main()
   initIOPorts();
 
   msDelay(100);
-//  getSelfBias();
-//  lcdInit(42); //Adjust this for LCD contrast
 
   initRadioSettings();
 
-//  LCD_BACKLIGHT = 0;
-//  lcdClear();
-//  lcdShowStr("HACKED",6);
-//  lcdShowStr("VER",0);
-//  lcdShowStr("002",3);
-
-  //lcdSetSymbol('.',0); //Lower period
-  msDelay(1000); //Show startup screen for 1 second
+  msDelay(100); //Show startup screen for 1 second
 
   //Initial RDA settings
   rda1846Init();
   rda1846RX(1); //Go into rx mode
 
-//  lcdClear();
 
   uartInit();
-
-//  unsigned short v1 = uartAvailable();
-//  unsigned short v2 = 0x20f2;
-//  unsigned short v3 = v1*v2;
-//  lcdShowNum(v3, 8, 10);
-
-//  initUI();
-  //unsigned short num = 10;
-  //char testStr[5] = "test";
-
-  //uiAddNum(UI_BR, &num);
-  ////uiAddStr(UI_BL, testStr);
-
-  ////uiSetEditLoc(UI_TL, 1);
-
 
   while(1)
   {
     WDTR	= 0xFF;
-    int k = 0;
-
-//    unsigned char avl  = uartAvailable();
-//    unsigned char keys = getKeys();
-//    char encoderDir = getDialEncoder();
-
     if (uartAvailable() > 0) processSerialCommand();
-    
-  //  else
-  //    processRadioMode(currentMode, keys, encoderDir);
-
-    //unsigned char val = readADC(ADC_1); //Read the battery level
   }
 
   return 0;

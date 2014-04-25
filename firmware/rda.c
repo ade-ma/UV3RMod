@@ -104,11 +104,6 @@ void rda1846GetStatus(short* rssi, short* vssi) //, short* dtmf, short* flags)
 
 }
 
-unsigned char getDTMF()
-{
-  return 0;
-}
-
 //GPIO0 css_out
 //GPIO1 off VFM
 //GPIO2 on  VHF
@@ -202,11 +197,6 @@ void rda1846TXDigital(unsigned char data, unsigned short t,
   rda1846RX(1);
 }
 
-void rda1846SetReg(unsigned char addr, unsigned short data)
-{
-  SPI(addr, data);
-}
-
 void rda1846SetCtcss(unsigned short freq)
 {
   SPI(CTCSS_FREQ, freq);
@@ -219,9 +209,4 @@ void rda1846RX(unsigned char useSq)
     SPI(0x30, 0x302E); //2E RX
   else
     SPI(0x30, 0x3026); //2E RX
-}
-
-void rda1946SetPower(unsigned char power)
-{
-
 }
