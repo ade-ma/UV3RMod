@@ -23,54 +23,20 @@
 #include <hms800.h>
 #include "uv3r.h"
 #include "uart.h"
-#include "rda.h"
-
-struct RadioSettings radioSettings;
-
-void initRadioSettings()
-{
-  radioSettings.rxFreqM = 145;
-  radioSettings.rxFreqK = 525;
-
-  radioSettings.txFreqM = 145;
-  radioSettings.txFreqK = 525;
-
-  radioSettings.offset = 0;
-
-  radioSettings.rssi = 0;
-  radioSettings.vssi = 0;
-  radioSettings.dtmf = 0;
-  radioSettings.flags = 0;
-
-  radioSettings.ctcss = 0;
-
-
-  radioSettings.txDTMF[0] = 0x01;
-  radioSettings.txDTMF[1] = 0x02;
-  radioSettings.txDTMF[2] = 0x03;
-  radioSettings.txDTMF[3] = 0x10; //Blank
-  radioSettings.txDTMF[4] = 0x10; //Blank
-  radioSettings.txDTMF[5] = 0x10; //Blank
-
-  radioSettings.transmitting = FALSE;
-  radioSettings.txTime = 0;
-
-}
 
 int main()
 {
   //Pin 31 is R10
   initIOPorts();
 
-  msDelay(100);
+  //msDelay(100);
 
-  initRadioSettings();
+  //initRadioSettings();
 
-  msDelay(100); //Show startup screen for 1 second
+  //msDelay(100); //Show startup screen for 1 second
 
   //Initial RDA settings
-  rda1846Init();
-  rda1846RX(1); //Go into rx mode
+//  rda1846Init();
 
 
   uartInit();

@@ -23,7 +23,6 @@
 #include <hms800.h>
 #include "uv3r.h"
 #include "uart.h"
-#include "rda.h"
 #include "spi.h"
 
 void processSerialCommand()
@@ -34,30 +33,37 @@ void processSerialCommand()
 	uartSendMsg("Got start\r\n");
 	unsigned char cmd = getChar();
 	uartSendMsg("Got Command ");
-	uartSendNum(cmd, 10);
+	uartSendNum(cmd, 16);
 	uartSendMsg("\r\n");
 
 	switch(cmd)
 	{
-	case 'D':
-		if(getChar() == '\r' && getChar() == '\n')
-		rda1846TXDTMF(radioSettings.txDTMF, 6, 1000);
+	case 'E':
+		{
+		short reg = getChar()&0xff;
+		reg <<= 8;
+		reg |= getChar()&0xff;
+		if (getChar() == '\r' && getChar() == '\n')
+		{
+			unsigned char val = *((char *)reg);
+			uartSendNum(val, 16);
+			uartSendMsg("\r\n");
+		}
+		}
 		break;
-	case 'd':
-		uartSendMsg("Send Digital RTTY\n");
-
-		unsigned char data = getChar()&0xFF;
-
-		short time = getChar()&0xFF;
-		time <<= 8;
-		time |= getChar()&0xFF;
-
+	case 'O':
+		{
+		short reg = getChar()&0xFF;
+		reg <<= 8;
+		reg |= getChar()&0xFF;
+		char val = getChar()&0xFF;
 		if(getChar() == '\r' && getChar() == '\n')
-			rda1846TXDigital(data, time,
-				5796, //Mark 1.415Khz
-				6492 //space 1.585Khz
-				);
-		uartSendMsg("Send Digital Done\n");
+		{
+			*((char *) reg) = val;
+			uartSendNum(val, 16);
+			uartSendMsg("\r\n");
+		}
+		}
 		break;
 	case 'S':
 		{
@@ -69,11 +75,6 @@ void processSerialCommand()
 
 		if(getChar() == '\r' && getChar() == '\n')
 		{
-			uartSendMsg("Set: ");
-			uartSendNum(addr, 16);
-			uartSendMsg(" to ");
-			uartSendNum(data, 16);
-			uartSendMsg("\r\n");
 			short out = SPI(addr, data);
 			uartSendNum(out, 16);
 			uartSendMsg("\r\n");

@@ -1,19 +1,31 @@
 import glob, serial, time
 
-s = serial.Serial(glob.glob("/dev/ttyUSB*")[0], 9600)
+s = serial.Serial("/dev/ttyUSB0", 9600)
 
-def poke (addr, value):
+def setR (addr, value):
 	s.write("\xAA\x55S"+chr(addr)+chr(value>>8)+chr(value&0xff)+"\r\n")
-	(map(lambda x:hex(ord(x)),"\xAA\x55S"+chr(addr)+chr(value>>8)+chr(value&0xff)+"\r\n"))
-	print s.readline()+s.readline()+s.readline()+s.readline()
+	s.flush()
+	print s.readline()+s.readline()+s.readline()
 
-def setf (freq):
+def peek (addr):
+	s.write("\xAA\x55E"+chr(addr>>8)+chr(addr&0xff)+"\r\n")
+	s.flush()
+	print s.readline()+s.readline()
+	return eval("0x"+s.readline())
+
+def poke (addr, val):
+	s.write("\xAA\x55O"+chr(addr>>8)+chr(addr&0xff)+chr(val&0xff)+"\r\n")
+	s.flush()
+	print s.readline()+s.readline()
+	return eval("0x"+s.readline())
+
+def setRf (freq):
 	x = int(freq*8000)
-	poke(0x29, x>>16)
-	poke(0x2a, x&0xffff)
+	setR(0x29, x>>16)
+	setR(0x2a, x&0xffff)
 
 
-#setf(145.525)
+#setRf(145.525)
 
 init = [
  ( 0x30, 0x0001 ),
@@ -48,12 +60,14 @@ init = [
  ( 0x36, 0x1000 )
 ]
 
-#[poke(x,y) for (x,y) in init]
-setf(145.550)
-[poke(x,y) for (x,y) in [(0x3c, 0x958), (0x1f, 0xc000), (0x30, 0x3046)]]
+#[setR(x,y) for (x,y) in init]
+setRf(145.550)
+[setR(x,y) for (x,y) in [(0x3c, 0x958), (0x1f, 0xc000), (0x30, 0x3046)]]
 
-poke(0x0a, 0x0410)
-
+setR(0x0a, 0x0410)
+poke(0xc2, peek(0xc2)|1)
+poke(0xc3, peek(0xc3)|1)
 raw_input()
+poke(0xc2, peek(0xc2)^1)
 
-[poke(x,y) for (x,y) in [(0x1f, 0x0), (0x30, 0x302E)]]
+[setR(x,y) for (x,y) in [(0x1f, 0x0), (0x30, 0x302E)]]

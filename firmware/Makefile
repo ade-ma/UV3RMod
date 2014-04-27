@@ -8,7 +8,7 @@ OBJDUMP=wine $(CC_INSTALL_DIR)/bin/hms800-elf-objdump
 
 #OBJS=lcd.o rda.o spi.o time.o uv3r.o main.o Int.o uart.o ui.o serialCtrl.o util.o radioModes.o
 #OBJS=lcd.o rda.o main.o uart.o ui.o serialCtrl.o util.o radioModes.o
-OBJS=rda.o main.o uart.o serialCtrl.o util.o
+OBJS=main.o uart.o serialCtrl.o util.o
 
 ifeq ($(TARGET),SIM)
 	FOBJS=$(OBJS) sim/uv3r.o sim/spi.o

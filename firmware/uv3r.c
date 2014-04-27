@@ -101,7 +101,7 @@ void initIOPorts()
   R0 = 0x00;
 
 
-  //R10 Lap (Output)
+  //R10 Lamp (Output)
   //R11 Backlight (Output)
   //R12 TXD (output)
   //R13 PPT/RXD (Input)
